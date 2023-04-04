@@ -56,42 +56,35 @@ void ofApp::keyPressed(const int key)
 	constexpr int speed { 5 };
 	switch (key)
 	{
-		case '`':
-			shadersNeedReload = true;
+		case '`': shadersNeedReload = true;
 			break;
 
 		case 'a':
 		case 'A':
-		case OF_KEY_LEFT:
-			velocity.x = -speed;
+		case OF_KEY_LEFT: velocity.x = -speed;
 			break;
 
 		case 'd':
 		case 'D':
-		case OF_KEY_RIGHT:
-			velocity.x = speed;
+		case OF_KEY_RIGHT: velocity.x = speed;
 			break;
 
 		case 'q':
-		case 'Q':
-			velocity.y = -speed;
+		case 'Q': velocity.y = -speed;
 			break;
 
 		case 'e':
-		case 'E':
-			velocity.y = speed;
+		case 'E': velocity.y = speed;
 			break;
 
 		case 'w':
 		case 'W':
-		case OF_KEY_UP:
-			velocity.z = -speed;
+		case OF_KEY_UP: velocity.z = -speed;
 			break;
 
 		case 's':
 		case 'S':
-		case OF_KEY_DOWN:
-			velocity.z = speed;
+		case OF_KEY_DOWN: velocity.z = speed;
 			break;
 
 		default: break;
@@ -105,36 +98,30 @@ void ofApp::keyReleased(const int key)
 	{
 		case 'a':
 		case 'A':
-		case OF_KEY_LEFT:
-			velocity.x = 0;
+		case OF_KEY_LEFT: velocity.x = 0;
 			break;
 
 		case 'd':
 		case 'D':
-		case OF_KEY_RIGHT:
-			velocity.x = 0;
+		case OF_KEY_RIGHT: velocity.x = 0;
 			break;
 
 		case 'q':
-		case 'Q':
-			velocity.y = 0;
+		case 'Q': velocity.y = 0;
 			break;
 
 		case 'e':
-		case 'E':
-			velocity.y = 0;
+		case 'E': velocity.y = 0;
 			break;
 
 		case 'w':
 		case 'W':
-		case OF_KEY_UP:
-			velocity.z = 0;
+		case OF_KEY_UP: velocity.z = 0;
 			break;
 
 		case 's':
 		case 'S':
-		case OF_KEY_DOWN:
-			velocity.z = 0;
+		case OF_KEY_DOWN: velocity.z = 0;
 			break;
 
 		default: break;
