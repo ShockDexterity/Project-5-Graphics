@@ -25,7 +25,7 @@ public:
 
 private:
 	// meshes
-	ofMesh mesh {};
+	ofMesh cube {};
 
 	// cubemaps
 	ofxCubemap cubemap {};

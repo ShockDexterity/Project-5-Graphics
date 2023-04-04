@@ -8,6 +8,7 @@ void ofApp::reloadShaders()
 	shadersNeedReload = false;
 
 	// reload shaders
+	shader.load("shaders/my.vert", "shaders/my.frag");
 }
 
 //--------------------------------------------------------------
@@ -15,7 +16,7 @@ void ofApp::setup()
 {
 	reloadShaders();
 
-	// setup
+	cube.load("models/cube.ply");
 }
 
 //--------------------------------------------------------------
