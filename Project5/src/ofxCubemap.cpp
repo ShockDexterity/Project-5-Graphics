@@ -9,7 +9,7 @@ ofxCubemap::ofxCubemap()
 	textureData.texData.textureID = 0;
 	textureData.texData.textureTarget = GL_TEXTURE_CUBE_MAP;
 
-    glGenTextures(1, &glTexId);
+	glGenTextures(1, &glTexId);
 }
 
 ofxCubemap::~ofxCubemap()
@@ -18,13 +18,12 @@ ofxCubemap::~ofxCubemap()
 }
 
 bool ofxCubemap::load(const std::filesystem::path& front,
-							const std::filesystem::path& back,
-							const std::filesystem::path& right,
-							const std::filesystem::path& left,
-							const std::filesystem::path& top,
-							const std::filesystem::path& bottom)
+                      const std::filesystem::path& back,
+                      const std::filesystem::path& right,
+                      const std::filesystem::path& left,
+                      const std::filesystem::path& top,
+                      const std::filesystem::path& bottom)
 {
-	
 	bool success = images[0].load(right);
 	success |= images[1].load(left);
 	success |= images[2].load(top);
@@ -60,7 +59,8 @@ bool ofxCubemap::load(const std::filesystem::path& front,
 
 		faceData[i] = images[i].getPixels().getData();
 
-		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X+i, 0, images[i].getTexture().texData.glInternalFormat, faceWidth, faceHeight, 0, ofGetGLFormat(images[i].getPixels()), GL_UNSIGNED_BYTE, faceData[i]);
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, images[i].getTexture().texData.glInternalFormat, faceWidth,
+		             faceHeight, 0, ofGetGLFormat(images[i].getPixels()), GL_UNSIGNED_BYTE, faceData[i]);
 	}
 	glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
 

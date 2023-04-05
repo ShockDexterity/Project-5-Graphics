@@ -49,5 +49,11 @@
     <None Include="bin\data\shaders\my.vert">
       <Filter>src</Filter>
     </None>
+    <None Include="bin\data\shaders\skybox.vert">
+      <Filter>src</Filter>
+    </None>
+    <None Include="bin\data\shaders\skybox.frag">
+      <Filter>src</Filter>
+    </None>
   </ItemGroup>
 </Project>

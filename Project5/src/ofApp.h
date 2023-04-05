@@ -2,6 +2,7 @@
 
 #include "ofMain.h"
 #include "Camera.h"
+#include "CameraMatrices.h"
 #include "ofxCubemap.h"
 
 class ofApp final : public ofBaseApp
@@ -15,30 +16,34 @@ public:
 	void keyReleased(int key) override;
 	void mouseMoved(int x, int y) override;
 	void mouseDragged(int x, int y, int button) override;
-	void mousePressed(int x, int y, int button) override;
-	void mouseReleased(int x, int y, int button) override;
-	void mouseEntered(int x, int y) override;
-	void mouseExited(int x, int y) override;
-	void windowResized(int w, int h) override;
-	void dragEvent(ofDragInfo dragInfo) override;
-	void gotMessage(ofMessage msg) override;
+
+	void mousePressed(int x, int y, int button) override {};
+	void mouseReleased(int x, int y, int button) override {};
+	void mouseEntered(int x, int y) override {};
+	void mouseExited(int x, int y) override {};
+	void windowResized(int w, int h) override {};
+	void dragEvent(ofDragInfo dragInfo) override {};
+	void gotMessage(ofMessage msg) override {};
 
 private:
 	// meshes
-	ofMesh cube {};
+	ofMesh cubeMesh {};
 
 	// cubemaps
-	ofxCubemap cubemap {};
+	ofxCubemap skybox {};
 
 	// shaders
 	ofShader shader {};
+	ofShader skyboxShader {};
+
+	void drawCube(const CameraMatrices& camMatrices);
 
 	// camera stuffs
 	int prevX { 0 }, prevY { 0 }; // previous mouse coordinates
 	float camHead { 0.0f }, camPitch { 0.0f }; // head and pitch of the camera
 	glm::vec3 velocity { 0.0f, 0.0f, 0.0f };
 	const float mouseSensitivity { 0.02f };
-	Camera camera { glm::vec3(0.0f, 0.0f, 2.0f) };
+	Camera camera { glm::vec3(0.0f) };
 
 	void updateCameraRotation(float dx, float dy);
 
