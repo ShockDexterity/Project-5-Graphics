@@ -54,6 +54,7 @@ void ofApp::setup()
 {
 	ofDisableArbTex();
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_CULL_FACE);
 
 	cubeMesh.load("models/cube.ply");
 	shieldMesh.load("models/shield.ply");
@@ -106,7 +107,9 @@ void ofApp::draw()
 	const mat4 model { translate(vec3(0.0f, 0.0f, -2.0f)) };
 	const mat4 mvp { camMatrices.getProj() * camMatrices.getView() * model };
 
+	glDisable(GL_CULL_FACE);
 	drawCube(camMatrices);
+	glEnable(GL_CULL_FACE);
 
 	shieldShader.begin();
 
