@@ -47,6 +47,8 @@ void ofApp::reloadShaders()
 	// reload shaders
 	shieldShader.load("shaders/shield.vert", "shaders/shield.frag");
 	skyboxShader.load("shaders/skybox.vert", "shaders/skybox.frag");
+	rvShader.load("shaders/shield.vert", "shaders/shield.frag");
+	swordShader.load("shaders/shield.vert", "shaders/shield.frag");
 }
 
 //--------------------------------------------------------------
@@ -61,6 +63,14 @@ void ofApp::setup()
 	calcTangents(shieldMesh);
 	shieldDiffuse.load("textures/shield_diffuse.png");
 	shieldNormal.load("textures/shield_normal.png");
+
+	rvMesh.load("models/breaking.ply");
+	rvDiffuse.load("textures/RV_RV_Albedo.png");
+	rvNormal.load("textures/RV_RV_Normal.png");
+
+	swordMesh.load("models/sword.ply");
+	swordDiffuse.load("textures/TEX_Greatsword_COL.png");
+	swordNormal.load("textures/TEX_Greatsword_NRM.png");
 
 	// assert(shieldDiffuse.getWidth() != 0 && shieldDiffuse.getHeight() != 0);
 
@@ -105,7 +115,10 @@ void ofApp::draw()
 
 	const CameraMatrices camMatrices { camera, aspect, 0.1f, 10.0f };
 	const mat4 model { translate(vec3(0.0f, 0.0f, -2.0f)) };
+	const mat4 swordModel{ translate(vec3(0.0f, 0.0f, -5.0f)) * scale(vec3(100.0f)) };
 	const mat4 mvp { camMatrices.getProj() * camMatrices.getView() * model };
+	const mat4 vp{ camMatrices.getProj() * camMatrices.getView() };
+	const mat4 swordMVP{ vp * swordModel };
 
 	glDisable(GL_CULL_FACE);
 	drawCube(camMatrices);
@@ -122,9 +135,23 @@ void ofApp::draw()
 	shieldShader.setUniformTexture("diffuseTex", shieldDiffuse, 0);
 	shieldShader.setUniformTexture("normalTex", shieldNormal, 1);
 
-	shieldMesh.draw();
+	//shieldMesh.draw();
 
 	shieldShader.end();
+
+	swordShader.begin();
+	swordShader.setUniform3f("lightDir", normalize(vec3(1)));
+	swordShader.setUniform3f("lightColor", vec3(1));
+	swordShader.setUniform3f("ambientColor", vec3(0.1f));
+
+	swordShader.setUniformMatrix4f("mvp", swordMVP);
+	swordShader.setUniformMatrix3f("normalMatrix", mat3());
+	swordShader.setUniformTexture("diffuseTex", swordDiffuse, 0);
+	swordShader.setUniformTexture("normalTex", swordNormal, 1);
+
+	swordMesh.draw();
+	swordShader.end();
+
 }
 
 //--------------------------------------------------------------

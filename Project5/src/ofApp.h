@@ -29,6 +29,8 @@ private:
 	// meshes
 	ofMesh cubeMesh {};
 	ofMesh shieldMesh {};
+	ofMesh rvMesh{};
+	ofMesh swordMesh{};
 
 	// cubemaps
 	ofxCubemap skybox {};
@@ -36,12 +38,18 @@ private:
 	// shaders
 	ofShader shieldShader {};
 	ofShader skyboxShader {};
+	ofShader rvShader{};
+	ofShader swordShader{};
 
 	// diffuse textures
 	ofImage shieldDiffuse{};
+	ofImage rvDiffuse{};
+	ofImage swordDiffuse{};
 
 	// normal maps
 	ofImage shieldNormal {};
+	ofImage rvNormal{};
+	ofImage swordNormal{};
 
 	void drawCube(const CameraMatrices& camMatrices);
 
