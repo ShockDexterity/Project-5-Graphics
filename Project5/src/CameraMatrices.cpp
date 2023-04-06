@@ -2,12 +2,10 @@
 
 using namespace glm;
 
-CameraMatrices::CameraMatrices(const Camera& camera,
-	float aspect, float nearPlane, float farPlane)
+CameraMatrices::CameraMatrices(const Camera& camera, const float aspect, const float nearPlane, const float farPlane)
 	: camera { camera },
-	view { mat4(transpose(camera.rotation)) * glm::translate(-camera.position) },
-	proj { perspective(camera.fov, aspect, nearPlane, farPlane) }
-{ }
+	  view { mat4(transpose(camera.rotation)) * glm::translate(-camera.position) },
+	  proj { perspective(camera.fov, aspect, nearPlane, farPlane) } { }
 
 const Camera& CameraMatrices::getCamera() const
 {

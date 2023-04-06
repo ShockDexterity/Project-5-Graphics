@@ -17,41 +17,46 @@ public:
 	void mouseMoved(int x, int y) override;
 	void mouseDragged(int x, int y, int button) override;
 
-	void mousePressed(int x, int y, int button) override {};
-	void mouseReleased(int x, int y, int button) override {};
-	void mouseEntered(int x, int y) override {};
-	void mouseExited(int x, int y) override {};
-	void windowResized(int w, int h) override {};
-	void dragEvent(ofDragInfo dragInfo) override {};
-	void gotMessage(ofMessage msg) override {};
+	void mousePressed(int x, int y, int button) override {}
+	void mouseReleased(int x, int y, int button) override {}
+	void mouseEntered(int x, int y) override {}
+	void mouseExited(int x, int y) override {}
+	void windowResized(int w, int h) override {}
+	void dragEvent(ofDragInfo dragInfo) override {}
+	void gotMessage(ofMessage msg) override {}
 
 private:
 	// meshes
 	ofMesh cubeMesh {};
+	ofMesh rvMesh {};
+	ofMesh swordMesh {};
 	ofMesh shieldMesh {};
-	ofMesh rvMesh{};
-	ofMesh swordMesh{};
+
+	// vbos
+	ofVbo rvVbo {};
+	ofVbo swordVbo {};
+	ofVbo shieldVbo {};
 
 	// cubemaps
 	ofxCubemap skybox {};
 
 	// shaders
+	ofShader rvShader {};
+	ofShader swordShader {};
 	ofShader shieldShader {};
 	ofShader skyboxShader {};
-	ofShader rvShader{};
-	ofShader swordShader{};
 
 	// diffuse textures
-	ofImage shieldDiffuse{};
-	ofImage rvDiffuse{};
-	ofImage swordDiffuse{};
+	ofImage rvDiffuse {};
+	ofImage swordDiffuse {};
+	ofImage shieldDiffuse {};
 
 	// normal maps
+	ofImage rvNormal {};
+	ofImage swordNormal {};
 	ofImage shieldNormal {};
-	ofImage rvNormal{};
-	ofImage swordNormal{};
 
-	void drawCube(const CameraMatrices& camMatrices);
+	void drawCube(const glm::mat4& proj, const glm::mat4& view);
 
 	// camera stuffs
 	int prevX { 0 }, prevY { 0 }; // previous mouse coordinates

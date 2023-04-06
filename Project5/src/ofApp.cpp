@@ -45,10 +45,10 @@ void ofApp::reloadShaders()
 	shadersNeedReload = false;
 
 	// reload shaders
-	shieldShader.load("shaders/shield.vert", "shaders/shield.frag");
+	shieldShader.load("shaders/object.vert", "shaders/object.frag");
+	rvShader.load("shaders/object.vert", "shaders/object.frag");
+	swordShader.load("shaders/object.vert", "shaders/object.frag");
 	skyboxShader.load("shaders/skybox.vert", "shaders/skybox.frag");
-	rvShader.load("shaders/shield.vert", "shaders/shield.frag");
-	swordShader.load("shaders/shield.vert", "shaders/shield.frag");
 }
 
 //--------------------------------------------------------------
@@ -59,16 +59,22 @@ void ofApp::setup()
 	glEnable(GL_CULL_FACE);
 
 	cubeMesh.load("models/cube.ply");
+
 	shieldMesh.load("models/shield.ply");
 	calcTangents(shieldMesh);
+	shieldVbo.setMesh(shieldMesh, GL_STATIC_DRAW);
 	shieldDiffuse.load("textures/shield_diffuse.png");
 	shieldNormal.load("textures/shield_normal.png");
 
 	rvMesh.load("models/breaking.ply");
+	calcTangents(rvMesh);
+	rvVbo.setMesh(rvMesh, GL_STATIC_DRAW);
 	rvDiffuse.load("textures/RV_RV_Albedo.png");
 	rvNormal.load("textures/RV_RV_Normal.png");
 
 	swordMesh.load("models/sword.ply");
+	calcTangents(swordMesh);
+	swordVbo.setMesh(swordMesh, GL_STATIC_DRAW);
 	swordDiffuse.load("textures/TEX_Greatsword_COL.png");
 	swordNormal.load("textures/TEX_Greatsword_NRM.png");
 
@@ -114,44 +120,87 @@ void ofApp::draw()
 	const float aspect { width / height };
 
 	const CameraMatrices camMatrices { camera, aspect, 0.1f, 10.0f };
-	const mat4 model { translate(vec3(0.0f, 0.0f, -2.0f)) };
-	const mat4 swordModel{ translate(vec3(0.0f, 0.0f, -5.0f)) * scale(vec3(100.0f)) };
-	const mat4 mvp { camMatrices.getProj() * camMatrices.getView() * model };
-	const mat4 vp{ camMatrices.getProj() * camMatrices.getView() };
-	const mat4 swordMVP{ vp * swordModel };
 
-	glDisable(GL_CULL_FACE);
-	drawCube(camMatrices);
-	glEnable(GL_CULL_FACE);
+	// "view projection" matrix, to be multiplied with a model later
+	const mat4 vp { camMatrices.getProj() * camMatrices.getView() };
 
-	shieldShader.begin();
+	drawCube(camMatrices.getProj(), camMatrices.getView());
 
-	shieldShader.setUniform3f("lightDir", normalize(vec3(1)));
-	shieldShader.setUniform3f("lightColor", vec3(1));
-	shieldShader.setUniform3f("ambientColor", vec3(0.1f));
+	// draw shield
+	{
+		shieldShader.begin();
 
-	shieldShader.setUniformMatrix4f("mvp", mvp);
-	shieldShader.setUniformMatrix3f("normalMatrix", mat3());
-	shieldShader.setUniformTexture("diffuseTex", shieldDiffuse, 0);
-	shieldShader.setUniformTexture("normalTex", shieldNormal, 1);
+		// lighting
+		shieldShader.setUniform3f("lightDir", normalize(yAxis));
+		shieldShader.setUniform3f("lightColor", vec3(1));
+		shieldShader.setUniform3f("ambientColor", vec3(0.1f));
 
-	//shieldMesh.draw();
+		// other stuff
+		const mat4 shieldModel { translate(vec3(0.0f, 0.0f, -2.0f)) };
+		const mat4 shieldMVP { camMatrices.getProj() * camMatrices.getView() * shieldModel };
+		shieldShader.setUniformMatrix4f("mvp", shieldMVP);
+		shieldShader.setUniformMatrix3f("normalMatrix", mat3());
+		shieldShader.setUniformTexture("diffuseTex", shieldDiffuse, 0);
+		shieldShader.setUniformTexture("normalTex", shieldNormal, 1);
 
-	shieldShader.end();
+		// draw and end
+		// shieldMesh.draw();
+		shieldVbo.drawElements(GL_TRIANGLES, shieldVbo.getNumIndices());
+		shieldShader.end();
+	}
 
-	swordShader.begin();
-	swordShader.setUniform3f("lightDir", normalize(vec3(1)));
-	swordShader.setUniform3f("lightColor", vec3(1));
-	swordShader.setUniform3f("ambientColor", vec3(0.1f));
+	// draw sword
+	{
+		swordShader.begin();
 
-	swordShader.setUniformMatrix4f("mvp", swordMVP);
-	swordShader.setUniformMatrix3f("normalMatrix", mat3());
-	swordShader.setUniformTexture("diffuseTex", swordDiffuse, 0);
-	swordShader.setUniformTexture("normalTex", swordNormal, 1);
+		// lighting
+		swordShader.setUniform3f("lightDir", normalize(yAxis));
+		swordShader.setUniform3f("lightColor", vec3(1));
+		swordShader.setUniform3f("ambientColor", vec3(0.1f));
 
-	swordMesh.draw();
-	swordShader.end();
+		// other stuff
 
+		const mat4 swordModel {
+			translate(vec3(0.0f, 0.0f, -5.0f))
+			* rotate(radians(-45.0f), zAxis)
+			* rotate(radians(90.0f), yAxis)
+			* scale(vec3(100.0f))
+		};
+		const mat4 swordMVP { vp * swordModel };
+		swordShader.setUniformMatrix4f("mvp", swordMVP);
+		swordShader.setUniformMatrix3f("normalMatrix", mat3());
+		swordShader.setUniformTexture("diffuseTex", swordDiffuse, 0);
+		swordShader.setUniformTexture("normalTex", swordNormal, 1);
+
+		// draw and end
+		// swordMesh.draw();
+		swordVbo.drawElements(GL_TRIANGLES, swordVbo.getNumIndices());
+		swordShader.end();
+	}
+
+	// draw rv
+	{
+		rvShader.begin();
+
+		// lighting
+		rvShader.setUniform3f("lightDir", normalize(yAxis));
+		rvShader.setUniform3f("lightColor", vec3(1));
+		rvShader.setUniform3f("ambientColor", vec3(0.1f));
+
+		// other stuff
+
+		const mat4 rvModel { translate(vec3(0.0f, 0.0f, -10.0f)) };
+		const mat4 rvMVP { vp * rvModel };
+		rvShader.setUniformMatrix4f("mvp", rvMVP);
+		rvShader.setUniformMatrix3f("normalMatrix", mat3());
+		rvShader.setUniformTexture("diffuseTex", rvDiffuse, 0);
+		rvShader.setUniformTexture("normalTex", rvNormal, 1);
+
+		// draw and end
+		// rvMesh.draw();
+		rvVbo.drawElements(GL_TRIANGLES, rvVbo.getNumIndices());
+		rvShader.end();
+	}
 }
 
 //--------------------------------------------------------------
@@ -243,7 +292,8 @@ void ofApp::mouseMoved(const int x, const int y)
 //--------------------------------------------------------------
 void ofApp::mouseDragged(const int x, const int y, const int button)
 {
-	if (button == 0)
+	// 0 = left and 2 = right
+	if (button == 0 or button == 2)
 	{
 		if (prevX != 0 && prevY != 0)
 		{
@@ -260,13 +310,14 @@ void ofApp::mouseDragged(const int x, const int y, const int button)
 }
 
 
-void ofApp::drawCube(const CameraMatrices& camMatrices)
+void ofApp::drawCube(const mat4& proj, const mat4& view)
 {
+	glDisable(GL_CULL_FACE);
 	glDepthFunc(GL_LEQUAL); // pass depth test
 
 	skyboxShader.begin();
 
-	skyboxShader.setUniformMatrix4f("mvp", camMatrices.getProj() * mat4(mat3(camMatrices.getView())));
+	skyboxShader.setUniformMatrix4f("mvp", proj * mat4(mat3(view)));
 	skyboxShader.setUniformTexture("cubemap", skybox.getTexture(), 0);
 
 	cubeMesh.draw();
@@ -274,4 +325,5 @@ void ofApp::drawCube(const CameraMatrices& camMatrices)
 	skyboxShader.end();
 
 	glDepthFunc(GL_LESS);
+	glEnable(GL_CULL_FACE);
 }
