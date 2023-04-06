@@ -206,8 +206,8 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="bin\data\shaders\my.frag" />
-    <None Include="bin\data\shaders\my.vert" />
+    <None Include="bin\data\shaders\shield.frag" />
+    <None Include="bin\data\shaders\shield.vert" />
     <None Include="bin\data\shaders\skybox.frag" />
     <None Include="bin\data\shaders\skybox.vert" />
   </ItemGroup>

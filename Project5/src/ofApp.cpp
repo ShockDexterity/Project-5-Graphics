@@ -1,5 +1,6 @@
 #include "ofApp.h"
 #include "CameraMatrices.h"
+#include "calcTangents.h"
 
 using namespace glm;
 
@@ -44,16 +45,23 @@ void ofApp::reloadShaders()
 	shadersNeedReload = false;
 
 	// reload shaders
-	shader.load("shaders/my.vert", "shaders/my.frag");
+	shieldShader.load("shaders/shield.vert", "shaders/shield.frag");
 	skyboxShader.load("shaders/skybox.vert", "shaders/skybox.frag");
 }
 
 //--------------------------------------------------------------
 void ofApp::setup()
 {
-	reloadShaders();
+	ofDisableArbTex();
+	glEnable(GL_DEPTH_TEST);
 
 	cubeMesh.load("models/cube.ply");
+	shieldMesh.load("models/shield.ply");
+	calcTangents(shieldMesh);
+	shieldDiffuse.load("textures/shield_diffuse.png");
+	shieldNormal.load("textures/shield_normal.png");
+
+	// assert(shieldDiffuse.getWidth() != 0 && shieldDiffuse.getHeight() != 0);
 
 	// load skybox images
 	skybox.load("textures/skybox_front.png",
@@ -62,6 +70,8 @@ void ofApp::setup()
 	            "textures/skybox_left.png",
 	            "textures/skybox_top.png",
 	            "textures/skybox_bottom.png");
+
+	reloadShaders();
 }
 
 //--------------------------------------------------------------
@@ -93,8 +103,25 @@ void ofApp::draw()
 	const float aspect { width / height };
 
 	const CameraMatrices camMatrices { camera, aspect, 0.1f, 10.0f };
+	const mat4 model { translate(vec3(0.0f, 0.0f, -2.0f)) };
+	const mat4 mvp { camMatrices.getProj() * camMatrices.getView() * model };
 
 	drawCube(camMatrices);
+
+	shieldShader.begin();
+
+	shieldShader.setUniform3f("lightDir", normalize(vec3(1)));
+	shieldShader.setUniform3f("lightColor", vec3(1));
+	shieldShader.setUniform3f("ambientColor", vec3(0.1f));
+
+	shieldShader.setUniformMatrix4f("mvp", mvp);
+	shieldShader.setUniformMatrix3f("normalMatrix", mat3());
+	shieldShader.setUniformTexture("diffuseTex", shieldDiffuse, 0);
+	shieldShader.setUniformTexture("normalTex", shieldNormal, 1);
+
+	shieldMesh.draw();
+
+	shieldShader.end();
 }
 
 //--------------------------------------------------------------

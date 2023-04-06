@@ -28,13 +28,20 @@ public:
 private:
 	// meshes
 	ofMesh cubeMesh {};
+	ofMesh shieldMesh {};
 
 	// cubemaps
 	ofxCubemap skybox {};
 
 	// shaders
-	ofShader shader {};
+	ofShader shieldShader {};
 	ofShader skyboxShader {};
+
+	// diffuse textures
+	ofImage shieldDiffuse{};
+
+	// normal maps
+	ofImage shieldNormal {};
 
 	void drawCube(const CameraMatrices& camMatrices);
 
