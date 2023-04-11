@@ -1,6 +1,7 @@
 #include "ofApp.h"
-#include "CameraMatrices.h"
+
 #include "calcTangents.h"
+#include "CameraMatrices.h"
 
 using namespace glm;
 
@@ -17,11 +18,11 @@ using namespace glm;
  *
  *	(10) All objects in the scene (at least 1) must be illuminated by at least two light sources
  *
- *	(10) All diffuse objects in the scene (at least 1) should have an irradiance map applied to them for ambient lighting
+ *	DONE (10) All diffuse objects in the scene (at least 1) should have an irradiance map applied to them for ambient lighting
  *			that is consistent with the skybox. You may use the mipmap hack or load an irradiance cubemap.
  *			Both count for full credit, but a true irradiance map is preferred
  *
- *	(10) All shaders should have appropriate gamma correction, both when sampling color textures
+ *	DONE (10) All shaders should have appropriate gamma correction, both when sampling color textures
  *			and when calculating the final fragment color
  *
  * **********************************************************************************************************************
@@ -57,6 +58,7 @@ void ofApp::setup()
 	ofDisableArbTex();
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
+	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
 	// cube mesh
 	cubeMesh.load("models/cube.ply");
@@ -118,6 +120,8 @@ void ofApp::setup()
 	            "textures/skybox_left.png",
 	            "textures/skybox_top.png",
 	            "textures/skybox_bottom.png");
+	skybox.getTexture().generateMipmap();
+
 
 	reloadShaders();
 }
@@ -165,18 +169,18 @@ void ofApp::draw()
 		// lighting
 		shieldShader.setUniform3f("lightDir", normalize(yAxis));
 		shieldShader.setUniform3f("lightColor", vec3(1));
-		shieldShader.setUniform3f("ambientColor", vec3(0.1f));
+		shieldShader.setUniform3f("ambientColor", vec3(0.0f));
 
 		// other stuff
 		const mat4 shieldModel { translate(vec3(0.0f, 0.0f, -2.0f)) };
-		const mat4 shieldMVP { camMatrices.getProj() * camMatrices.getView() * shieldModel };
-		shieldShader.setUniformMatrix4f("mvp", shieldMVP);
+		const mat4 shieldMvp { camMatrices.getProj() * camMatrices.getView() * shieldModel };
+		shieldShader.setUniformMatrix4f("mvp", shieldMvp);
 		shieldShader.setUniformMatrix3f("normalMatrix", mat3());
 		shieldShader.setUniformTexture("diffuseTex", shieldDiffuse, 0);
 		shieldShader.setUniformTexture("normalTex", shieldNormal, 1);
+		shieldShader.setUniformTexture("envMap", skybox.getTexture(), 2);
 
-		// draw and end
-		// shieldMesh.draw();
+		// draw
 		shieldVbo.drawElements(GL_TRIANGLES, shieldVbo.getNumIndices());
 		shieldShader.end();
 	}
@@ -188,7 +192,7 @@ void ofApp::draw()
 		// lighting
 		swordShader.setUniform3f("lightDir", normalize(yAxis));
 		swordShader.setUniform3f("lightColor", vec3(1));
-		swordShader.setUniform3f("ambientColor", vec3(0.1f));
+		swordShader.setUniform3f("ambientColor", vec3(0.0f));
 
 		// other stuff
 
@@ -198,14 +202,14 @@ void ofApp::draw()
 			* rotate(radians(90.0f), yAxis)
 			* scale(vec3(100.0f))
 		};
-		const mat4 swordMVP { vp * swordModel };
-		swordShader.setUniformMatrix4f("mvp", swordMVP);
+		const mat4 swordMvp { vp * swordModel };
+		swordShader.setUniformMatrix4f("mvp", swordMvp);
 		swordShader.setUniformMatrix3f("normalMatrix", mat3());
 		swordShader.setUniformTexture("diffuseTex", swordDiffuse, 0);
 		swordShader.setUniformTexture("normalTex", swordNormal, 1);
+		swordShader.setUniformTexture("envMap", skybox.getTexture(), 2);
 
-		// draw and end
-		// swordMesh.draw();
+		// draw
 		swordVbo.drawElements(GL_TRIANGLES, swordVbo.getNumIndices());
 		swordShader.end();
 	}
@@ -217,19 +221,19 @@ void ofApp::draw()
 		// lighting
 		rvShader.setUniform3f("lightDir", normalize(yAxis));
 		rvShader.setUniform3f("lightColor", vec3(1));
-		rvShader.setUniform3f("ambientColor", vec3(0.1f));
+		rvShader.setUniform3f("ambientColor", vec3(0.0f));
 
 		// other stuff
 
 		const mat4 rvModel { translate(vec3(0.0f, 0.0f, -10.0f)) };
-		const mat4 rvMVP { vp * rvModel };
-		rvShader.setUniformMatrix4f("mvp", rvMVP);
+		const mat4 rvMvp { vp * rvModel };
+		rvShader.setUniformMatrix4f("mvp", rvMvp);
 		rvShader.setUniformMatrix3f("normalMatrix", mat3());
 		rvShader.setUniformTexture("diffuseTex", rvDiffuse, 0);
 		rvShader.setUniformTexture("normalTex", rvNormal, 1);
+		rvShader.setUniformTexture("envMap", skybox.getTexture(), 2);
 
-		// draw and end
-		// rvMesh.draw();
+		// draw
 		rvVbo.drawElements(GL_TRIANGLES, rvVbo.getNumIndices());
 		rvShader.end();
 	}
@@ -341,7 +345,7 @@ void ofApp::mouseDragged(const int x, const int y, const int button)
 	prevY = y;
 }
 
-
+//--------------------------------------------------------------
 void ofApp::drawCube(const mat4& proj, const mat4& view)
 {
 	glDisable(GL_CULL_FACE);
