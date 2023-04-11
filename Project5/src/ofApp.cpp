@@ -9,10 +9,10 @@ using namespace glm;
  *
  *	DONE (10) The scene must have a skybox
  *
- *	(10) The scene must have at least one object or surface with a color texture applied to it
+ *	DONE (10) The scene must have at least one object or surface with a color texture applied to it
  *			(enable mipmaps)
  *
- *	(10) The scene must have at least one object with a normal map applied to it.
+ *	DONE (10) The scene must have at least one object with a normal map applied to it.
  *			(you should enable mipmaps)
  *
  *	(10) All objects in the scene (at least 1) must be illuminated by at least two light sources
@@ -58,25 +58,56 @@ void ofApp::setup()
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 
+	// cube mesh
 	cubeMesh.load("models/cube.ply");
 
+
+	// shield mesh
 	shieldMesh.load("models/shield.ply");
 	calcTangents(shieldMesh);
 	shieldVbo.setMesh(shieldMesh, GL_STATIC_DRAW);
-	shieldDiffuse.load("textures/shield_diffuse.png");
-	shieldNormal.load("textures/shield_normal.png");
 
+	// shield color (with mipmaps)
+	shieldDiffuse.load("textures/shield_diffuse.png");
+	shieldDiffuse.getTexture().generateMipmap();
+	shieldDiffuse.getTexture().setTextureMinMagFilter(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+
+	// shield normal (with mipmaps)
+	shieldNormal.load("textures/shield_normal.png");
+	shieldNormal.getTexture().generateMipmap();
+	shieldNormal.getTexture().setTextureMinMagFilter(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+
+
+	// rv mesh
 	rvMesh.load("models/breaking.ply");
 	calcTangents(rvMesh);
 	rvVbo.setMesh(rvMesh, GL_STATIC_DRAW);
-	rvDiffuse.load("textures/RV_RV_Albedo.png");
-	rvNormal.load("textures/RV_RV_Normal.png");
 
+	// rv color (with mipmaps)
+	rvDiffuse.load("textures/RV_RV_Albedo.png");
+	rvDiffuse.getTexture().generateMipmap();
+	rvDiffuse.getTexture().setTextureMinMagFilter(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+
+	// rv normal (with mipmaps)
+	rvNormal.load("textures/RV_RV_Normal.png");
+	rvNormal.getTexture().generateMipmap();
+	rvNormal.getTexture().setTextureMinMagFilter(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+
+
+	// sword mesh
 	swordMesh.load("models/sword.ply");
 	calcTangents(swordMesh);
 	swordVbo.setMesh(swordMesh, GL_STATIC_DRAW);
+
+	// sword color (with mipmaps)
 	swordDiffuse.load("textures/TEX_Greatsword_COL.png");
+	swordDiffuse.getTexture().generateMipmap();
+	swordDiffuse.getTexture().setTextureMinMagFilter(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+
+	// sword normal (with mipmaps)
 	swordNormal.load("textures/TEX_Greatsword_NRM.png");
+	swordNormal.getTexture().generateMipmap();
+	swordNormal.getTexture().setTextureMinMagFilter(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
 
 	// assert(shieldDiffuse.getWidth() != 0 && shieldDiffuse.getHeight() != 0);
 
@@ -104,11 +135,12 @@ void ofApp::update()
 	camera.rotation = rotate(camHead, yAxis) * rotate(camPitch, xAxis);
 }
 
+//--------------------------------------------------------------
 void ofApp::updateCameraRotation(const float dx, const float dy)
 {
 	camHead -= dx;
 	camPitch -= dy;
-	camPitch = glm::clamp(camPitch, radians(-89.0f), radians(89.0f));
+	camPitch = clamp(camPitch, radians(-89.0f), radians(89.0f));
 }
 
 //--------------------------------------------------------------

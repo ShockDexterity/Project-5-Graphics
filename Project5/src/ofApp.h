@@ -1,8 +1,7 @@
 #pragma once
 
-#include "ofMain.h"
 #include "Camera.h"
-#include "CameraMatrices.h"
+#include "ofMain.h"
 #include "ofxCubemap.h"
 
 class ofApp final : public ofBaseApp
