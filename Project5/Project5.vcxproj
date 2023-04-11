@@ -192,6 +192,7 @@
     <ClInclude Include="src\CameraMatrices.h" />
     <ClInclude Include="src\ofApp.h" />
     <ClInclude Include="src\ofxCubemap.h" />
+    <ClInclude Include="src\Spotlight.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(OF_ROOT)\libs\openFrameworksCompiled\project\vs\openframeworksLib.vcxproj">

@@ -7,9 +7,11 @@ layout (location = 3) in vec2 uv;
 
 uniform mat4 mvp;
 uniform mat3 normalMatrix;
+uniform mat4 model;
 
 out vec2 fragUV;
 out mat3 TBN;
+out vec3 objectPos;
 
 void main()
 {
@@ -20,6 +22,8 @@ void main()
 	vec3 T = normalize(normalMatrix * tangent.xyz);
 	vec3 B = normalize(normalMatrix * cross(tangent.xyz, normal));
 	vec3 N = normalize(normalMatrix * normal);
+
+	objectPos = (model * vec4(position, 1.0)).xyz;
 
 	TBN = mat3(T, B, N);
 }

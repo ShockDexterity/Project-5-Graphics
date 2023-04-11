@@ -2,6 +2,7 @@
 
 #include "calcTangents.h"
 #include "CameraMatrices.h"
+#include "Spotlight.h"
 
 using namespace glm;
 
@@ -135,6 +136,10 @@ void ofApp::updateCameraRotation(const float dx, const float dy)
 //--------------------------------------------------------------
 void ofApp::draw()
 {
+	SpotLight spotLight;
+	spotLight.color = vec3(1, 1, 0);
+	spotLight.intensity = 10;
+	spotLight.cutoff = cos(radians(45.0f));
 	// aspect ratio
 	const float width { static_cast<float>(ofGetViewportWidth()) };
 	const float height { static_cast<float>(ofGetViewportHeight()) };
@@ -160,10 +165,16 @@ void ofApp::draw()
 		const mat4 shieldModel { translate(vec3(0.0f, 0.0f, -2.0f)) };
 		const mat4 shieldMvp { camMatrices.getProj() * camMatrices.getView() * shieldModel };
 		shieldShader.setUniformMatrix4f("mvp", shieldMvp);
+		shieldShader.setUniformMatrix4f("model", shieldModel);
 		shieldShader.setUniformMatrix3f("normalMatrix", transpose(inverse(shieldModel)));
 		shieldShader.setUniformTexture("diffuseTex", shieldDiffuse, 0);
 		shieldShader.setUniformTexture("normalTex", shieldNormal, 1);
 		shieldShader.setUniformTexture("envMap", skybox.getTexture(), 2);
+
+		/*shieldShader.setUniform3f("spotLightColor", spotLight.getColorIntensity());
+		shieldShader.setUniform3f("spotLightConeDir", -shieldModel[2]);
+		shieldShader.setUniform3f("spotLightPos", vec3(0.0f, 0.0f, -4.0f));
+		shieldShader.setUniform1f("spotLightCutoff", spotLight.cutoff);*/
 
 		// draw
 		shieldVbo.drawElements(GL_TRIANGLES, shieldVbo.getNumIndices());
@@ -189,6 +200,7 @@ void ofApp::draw()
 		};
 		const mat4 swordMvp { vp * swordModel };
 		swordShader.setUniformMatrix4f("mvp", swordMvp);
+		swordShader.setUniformMatrix4f("model", swordModel);
 		swordShader.setUniformMatrix3f("normalMatrix", transpose(inverse(swordModel)));
 		swordShader.setUniformTexture("diffuseTex", swordDiffuse, 0);
 		swordShader.setUniformTexture("normalTex", swordNormal, 1);
@@ -213,6 +225,7 @@ void ofApp::draw()
 		const mat4 rvModel { translate(vec3(0.0f, 0.0f, -10.0f)) };
 		const mat4 rvMvp { vp * rvModel };
 		rvShader.setUniformMatrix4f("mvp", rvMvp);
+		rvShader.setUniformMatrix4f("model", rvModel);
 		rvShader.setUniformMatrix3f("normalMatrix", transpose(inverse(rvModel)));
 		rvShader.setUniformTexture("diffuseTex", rvDiffuse, 0);
 		rvShader.setUniformTexture("normalTex", rvNormal, 1);

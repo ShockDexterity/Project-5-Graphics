@@ -38,6 +38,9 @@
     <ClInclude Include="src\ofxCubemap.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="src\Spotlight.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="icon.rc" />
