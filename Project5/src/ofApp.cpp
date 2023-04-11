@@ -175,7 +175,7 @@ void ofApp::draw()
 		const mat4 shieldModel { translate(vec3(0.0f, 0.0f, -2.0f)) };
 		const mat4 shieldMvp { camMatrices.getProj() * camMatrices.getView() * shieldModel };
 		shieldShader.setUniformMatrix4f("mvp", shieldMvp);
-		shieldShader.setUniformMatrix3f("normalMatrix", mat3());
+		shieldShader.setUniformMatrix3f("normalMatrix", transpose(inverse(shieldModel)));
 		shieldShader.setUniformTexture("diffuseTex", shieldDiffuse, 0);
 		shieldShader.setUniformTexture("normalTex", shieldNormal, 1);
 		shieldShader.setUniformTexture("envMap", skybox.getTexture(), 2);
@@ -204,7 +204,7 @@ void ofApp::draw()
 		};
 		const mat4 swordMvp { vp * swordModel };
 		swordShader.setUniformMatrix4f("mvp", swordMvp);
-		swordShader.setUniformMatrix3f("normalMatrix", mat3());
+		swordShader.setUniformMatrix3f("normalMatrix", transpose(inverse(swordModel)));
 		swordShader.setUniformTexture("diffuseTex", swordDiffuse, 0);
 		swordShader.setUniformTexture("normalTex", swordNormal, 1);
 		swordShader.setUniformTexture("envMap", skybox.getTexture(), 2);
@@ -218,17 +218,17 @@ void ofApp::draw()
 	{
 		rvShader.begin();
 
-		// lighting
+		//// lighting
 		rvShader.setUniform3f("lightDir", normalize(yAxis));
 		rvShader.setUniform3f("lightColor", vec3(1));
 		rvShader.setUniform3f("ambientColor", vec3(0.0f));
 
 		// other stuff
 
-		const mat4 rvModel { translate(vec3(0.0f, 0.0f, -10.0f)) };
+		const mat4 rvModel { translate(vec3(0.0f, 0.0f, -10.0f))};
 		const mat4 rvMvp { vp * rvModel };
 		rvShader.setUniformMatrix4f("mvp", rvMvp);
-		rvShader.setUniformMatrix3f("normalMatrix", mat3());
+		rvShader.setUniformMatrix3f("normalMatrix", transpose(inverse(rvModel)));
 		rvShader.setUniformTexture("diffuseTex", rvDiffuse, 0);
 		rvShader.setUniformTexture("normalTex", rvNormal, 1);
 		rvShader.setUniformTexture("envMap", skybox.getTexture(), 2);
