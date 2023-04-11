@@ -8,22 +8,7 @@ using namespace glm;
 /*
  *	PART 1 (60 Points)
  *
- *	DONE (10) The scene must have a skybox
- *
- *	DONE (10) The scene must have at least one object or surface with a color texture applied to it
- *			(enable mipmaps)
- *
- *	DONE (10) The scene must have at least one object with a normal map applied to it.
- *			(you should enable mipmaps)
- *
  *	(10) All objects in the scene (at least 1) must be illuminated by at least two light sources
- *
- *	DONE (10) All diffuse objects in the scene (at least 1) should have an irradiance map applied to them for ambient lighting
- *			that is consistent with the skybox. You may use the mipmap hack or load an irradiance cubemap.
- *			Both count for full credit, but a true irradiance map is preferred
- *
- *	DONE (10) All shaders should have appropriate gamma correction, both when sampling color textures
- *			and when calculating the final fragment color
  *
  * **********************************************************************************************************************
  *
@@ -35,9 +20,9 @@ using namespace glm;
  *	(10) The reflections should exhibit the Fresnel effect using Schlick's approximation
  *
  *	(10) For the highlights, you should implement the Cook-Torrance model shown in the
-			video on physically-based specularity, using the GGX model for the microfacet distribution, the
-			Smith height-correlated function for microfacet masking and shadowing, and Schlick's
-			approximation for the Fresnel effect
+ *			video on physically-based specularity, using the GGX model for the microfacet distribution, the
+ *			Smith height-correlated function for microfacet masking and shadowing, and Schlick's
+ *			approximation for the Fresnel effect
  *	
  */
 
@@ -225,7 +210,7 @@ void ofApp::draw()
 
 		// other stuff
 
-		const mat4 rvModel { translate(vec3(0.0f, 0.0f, -10.0f))};
+		const mat4 rvModel { translate(vec3(0.0f, 0.0f, -10.0f)) };
 		const mat4 rvMvp { vp * rvModel };
 		rvShader.setUniformMatrix4f("mvp", rvMvp);
 		rvShader.setUniformMatrix3f("normalMatrix", transpose(inverse(rvModel)));
