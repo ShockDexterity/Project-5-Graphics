@@ -10,6 +10,7 @@ uniform mat3 normalMatrix;
 uniform mat4 model;
 
 out vec2 fragUV;
+out vec3 fragNormal;
 out mat3 TBN;
 out vec3 objectPos;
 
@@ -22,6 +23,8 @@ void main()
 	vec3 T = normalize(normalMatrix * tangent.xyz);
 	vec3 B = normalize(normalMatrix * cross(tangent.xyz, normal));
 	vec3 N = normalize(normalMatrix * normal);
+
+	fragNormal = N;
 
 	objectPos = (model * vec4(position, 1.0)).xyz;
 

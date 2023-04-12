@@ -1,8 +1,8 @@
 #include "ofApp.h"
 
-#include "calcTangents.h"
 #include "CameraMatrices.h"
 #include "Spotlight.h"
+#include "calcTangents.h"
 
 using namespace glm;
 
@@ -142,10 +142,15 @@ void ofApp::updateCameraRotation(const float dx, const float dy)
 //--------------------------------------------------------------
 void ofApp::draw()
 {
-	SpotLight spotLight;
-	spotLight.color = vec3(1, 1, 0);
-	spotLight.intensity = 10;
-	spotLight.cutoff = cos(radians(45.0f));
+	const SpotLight spotLight {
+		vec3(1.0f),
+		10.0f,
+		cos(radians(45.0f)),
+		vec3((3 * yAxis) + (-10.0f * zAxis)),
+		-yAxis
+	};
+
+
 	// aspect ratio
 	const float width { static_cast<float>(ofGetViewportWidth()) };
 	const float height { static_cast<float>(ofGetViewportHeight()) };
@@ -162,11 +167,17 @@ void ofApp::draw()
 	{
 		shieldShader.begin();
 
-		// lighting
+		// ambient / directional lighting
 		shieldShader.setUniform3f("lightDir", normalize(yAxis));
 		shieldShader.setUniform3f("lightColor", vec3(1));
 		shieldShader.setUniform3f("ambientColor", vec3(0.0f));
-		//shieldShader.setUniform3f("cameraPosition", camMatrices.getCamera().position);
+		shieldShader.setUniform3f("cameraPosition", camMatrices.getCamera().position);
+
+		// spotlight
+		shieldShader.setUniform3f("spotLightColor", spotLight.getColorIntensity());
+		shieldShader.setUniform3f("spotLightConeDir", spotLight.getDirection());
+		shieldShader.setUniform3f("spotLightPos", spotLight.getPosition());
+		shieldShader.setUniform1f("spotLightCutoff", spotLight.getCutoff());
 
 		// other stuff
 		const mat4 shieldModel { translate(vec3(0.0f, 0.0f, -2.0f)) };
@@ -178,11 +189,6 @@ void ofApp::draw()
 		shieldShader.setUniformTexture("normalTex", shieldNormal, 1);
 		shieldShader.setUniformTexture("envMap", skybox.getTexture(), 2);
 
-		/*shieldShader.setUniform3f("spotLightColor", spotLight.getColorIntensity());
-		shieldShader.setUniform3f("spotLightConeDir", -shieldModel[2]);
-		shieldShader.setUniform3f("spotLightPos", vec3(0.0f, 0.0f, -4.0f));
-		shieldShader.setUniform1f("spotLightCutoff", spotLight.cutoff);*/
-
 		// draw
 		shieldVbo.drawElements(GL_TRIANGLES, shieldVbo.getNumIndices());
 		shieldShader.end();
@@ -192,11 +198,17 @@ void ofApp::draw()
 	{
 		swordShader.begin();
 
-		// lighting
+		// ambient / directional lighting
 		swordShader.setUniform3f("lightDir", normalize(yAxis));
 		swordShader.setUniform3f("lightColor", vec3(1));
 		swordShader.setUniform3f("ambientColor", vec3(0.0f));
 		swordShader.setUniform3f("cameraPosition", camMatrices.getCamera().position);
+
+		// spotlight
+		swordShader.setUniform3f("spotLightColor", spotLight.getColorIntensity());
+		swordShader.setUniform3f("spotLightConeDir", spotLight.getDirection());
+		swordShader.setUniform3f("spotLightPos", spotLight.getPosition());
+		swordShader.setUniform1f("spotLightCutoff", spotLight.getCutoff());
 
 		// other stuff
 
@@ -224,14 +236,19 @@ void ofApp::draw()
 	{
 		rvShader.begin();
 
-		//// lighting
+		// ambient / directional lighting
 		rvShader.setUniform3f("lightDir", normalize(yAxis));
 		rvShader.setUniform3f("lightColor", vec3(1));
 		rvShader.setUniform3f("ambientColor", vec3(0.0f));
 		rvShader.setUniform3f("cameraPosition", camMatrices.getCamera().position);
 
-		// other stuff
+		// spotlight
+		rvShader.setUniform3f("spotLightColor", spotLight.getColorIntensity());
+		rvShader.setUniform3f("spotLightConeDir", spotLight.getDirection());
+		rvShader.setUniform3f("spotLightPos", spotLight.getPosition());
+		rvShader.setUniform1f("spotLightCutoff", spotLight.getCutoff());
 
+		// other stuff
 		const mat4 rvModel { translate(vec3(0.0f, 0.0f, -10.0f)) };
 		const mat4 rvMvp { vp * rvModel };
 		rvShader.setUniformMatrix4f("mvp", rvMvp);

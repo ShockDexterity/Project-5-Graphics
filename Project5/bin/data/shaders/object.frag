@@ -20,6 +20,7 @@ uniform vec3 cameraPosition;
 uniform float roughness;
 
 in vec2 fragUV;
+in vec3 fragNormal;
 in mat3 TBN;
 in vec3 objectPos;
 
@@ -45,8 +46,8 @@ void main()
 	vec3 spotLightDir = normalize(toSpotLight);
 	float cosAngle = dot(spotLightDir, -spotLightConeDir);
 	float sFalloff = 1.0 / dot(toSpotLight, toSpotLight);
-	vec3 normal = normalize(TBN[2]);
-	vec3 spotLightIrr = sFalloff * spotLightColor * max(0, dot(normal, spotLightDir));
+	vec3 sNormal = normalize(fragNormal);
+	vec3 spotLightIrr = sFalloff * spotLightColor * max(0, dot(sNormal, spotLightDir));
 
 	//DIFFUSE CALCULATIONS
 
