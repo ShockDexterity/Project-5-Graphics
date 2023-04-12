@@ -17,6 +17,8 @@ uniform float spotLightCutoff;
 
 uniform vec3 cameraPosition;
 
+uniform float roughness;
+
 in vec2 fragUV;
 in mat3 TBN;
 in vec3 objectPos;
@@ -70,13 +72,35 @@ void main()
 	//environment map reflection - encoding gamma
 	vec3 envReflection = pow(texture(envMap, envLightDir).xyz, vec3(2.2));
 
+	//fresnel effect calculations
 	float envNDotL = max(0.0, dot(wsNormal, envLightDir));
 	vec3 fresnel = mix(specularColor, vec3(1), pow((1 - envNDotL), 5));
 
-
+	//specular reflection calculation
 	vec3 specularReflection = fresnel * envReflection;
 
+	//specular highlight calculation (Cook-Torrance, GGX, Smith)
+	vec3 halfway = normalize(lightDir + view);
+	float nDotH = max(0.0, dot(wsNormal, halfway));
+	float nDotV = max(0.0, dot(wsNormal, view));
+
+	float hDotL = max(0.0, dot(halfway, lightDir));
+	vec3 fresnelHighlight = mix(specularColor, vec3(1), pow(1 - hDotL, 5)); // F term
+	float Ddenom = mix(1, roughness * roughness, nDotH * nDotH);
+	Ddenom *= Ddenom;
+	float D = (roughness * roughness) / Ddenom; // D term
+
+	//G term
+	float Gdenom = (nDotV * sqrt(mix(nDotL * nDotL, 1, roughness * roughness))) + (nDotL * sqrt(mix(nDotV * nDotV, 1, roughness * roughness)));
+	float G = 0.5 / Gdenom;
+
+	vec3 cookTorr = D * fresnelHighlight * G;
+
+	//Calculate highlight intensity
+
+	vec3 totalColor = ambientDiffuse + specularReflection + cookTorr; 
+
 	// endcode gamma
-	outColor = vec4(pow(ambientDiffuse + specularReflection, vec3(1.0 / 2.2)), 1.0);
+	outColor = vec4(pow(totalColor, vec3(1.0 / 2.2)), 1.0);
 
 }
