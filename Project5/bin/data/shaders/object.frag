@@ -46,28 +46,35 @@ void main()
 	vec3 normal = normalize(TBN[2]);
 	vec3 spotLightIrr = sFalloff * spotLightColor * max(0, dot(normal, spotLightDir));
 
+	//DIFFUSE CALCULATIONS
+
 	//irradiance - decoding gamma
 	vec3 envIrradiance = pow(textureLod(envMap, wsNormal, 99).xyz, vec3(2.2));
 
 	// how much light is effectively recieved by the surface
 	vec3 irradiance = ambientColor + envIrradiance + lightColor * nDotL;
 
-	//specular calculations
-		//calculate view vector (direction from surface to camera)
-	vec3 view = cameraPosition - objectPos;
-	vec3 envLightDir = reflect(-view, wsNormal);
-
-	//environment map reflection - encoding gamma
-	vec3 envReflection = pow(texture(envMap, envLightDir).xyz, vec3(2.2));
-
-	
 	if (cosAngle > spotLightCutoff) //only lit if inside cutoff
 	{
 		irradiance += spotLightIrr;
 	}
 
 	vec3 ambientDiffuse = diffuseColor.rgb * irradiance;
-	vec3 specularReflection = specularColor * envReflection;
+
+	//SPECULAR CALCULATIONS
+
+	//calculate view vector (direction from surface to camera)
+	vec3 view = normalize(cameraPosition - objectPos);
+	vec3 envLightDir = reflect(-view, wsNormal);
+
+	//environment map reflection - encoding gamma
+	vec3 envReflection = pow(texture(envMap, envLightDir).xyz, vec3(2.2));
+
+	float envNDotL = max(0.0, dot(wsNormal, envLightDir));
+	vec3 fresnel = mix(specularColor, vec3(1), pow((1 - envNDotL), 5));
+
+
+	vec3 specularReflection = fresnel * envReflection;
 
 	// endcode gamma
 	outColor = vec4(pow(ambientDiffuse + specularReflection, vec3(1.0 / 2.2)), 1.0);
