@@ -50,6 +50,10 @@ private:
 	ofImage swordDiffuse {};
 	ofImage shieldDiffuse {};
 
+	//specular textures
+	ofImage rvMetallic{};
+	ofImage swordMetallic{};
+
 	// normal maps
 	ofImage rvNormal {};
 	ofImage swordNormal {};

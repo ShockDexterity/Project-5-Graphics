@@ -81,6 +81,9 @@ void ofApp::setup()
 	rvNormal.getTexture().generateMipmap();
 	rvNormal.getTexture().setTextureMinMagFilter(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
 
+	//rv specular
+	rvMetallic.load("textures/RV_RV_Metallic.png");
+
 
 	// sword mesh
 	swordMesh.load("models/sword.ply");
@@ -96,6 +99,9 @@ void ofApp::setup()
 	swordNormal.load("textures/TEX_Greatsword_NRM.png");
 	swordNormal.getTexture().generateMipmap();
 	swordNormal.getTexture().setTextureMinMagFilter(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+
+	// sword specular
+	swordMetallic.load("textures/TEX_Greatsword_MET.png");
 
 	// assert(shieldDiffuse.getWidth() != 0 && shieldDiffuse.getHeight() != 0);
 
@@ -160,6 +166,7 @@ void ofApp::draw()
 		shieldShader.setUniform3f("lightDir", normalize(yAxis));
 		shieldShader.setUniform3f("lightColor", vec3(1));
 		shieldShader.setUniform3f("ambientColor", vec3(0.0f));
+		//shieldShader.setUniform3f("cameraPosition", camMatrices.getCamera().position);
 
 		// other stuff
 		const mat4 shieldModel { translate(vec3(0.0f, 0.0f, -2.0f)) };
@@ -189,6 +196,7 @@ void ofApp::draw()
 		swordShader.setUniform3f("lightDir", normalize(yAxis));
 		swordShader.setUniform3f("lightColor", vec3(1));
 		swordShader.setUniform3f("ambientColor", vec3(0.0f));
+		swordShader.setUniform3f("cameraPosition", camMatrices.getCamera().position);
 
 		// other stuff
 
@@ -204,7 +212,8 @@ void ofApp::draw()
 		swordShader.setUniformMatrix3f("normalMatrix", transpose(inverse(swordModel)));
 		swordShader.setUniformTexture("diffuseTex", swordDiffuse, 0);
 		swordShader.setUniformTexture("normalTex", swordNormal, 1);
-		swordShader.setUniformTexture("envMap", skybox.getTexture(), 2);
+		rvShader.setUniformTexture("metallicTex", swordMetallic, 2);
+		swordShader.setUniformTexture("envMap", skybox.getTexture(), 3);
 
 		// draw
 		swordVbo.drawElements(GL_TRIANGLES, swordVbo.getNumIndices());
@@ -219,6 +228,7 @@ void ofApp::draw()
 		rvShader.setUniform3f("lightDir", normalize(yAxis));
 		rvShader.setUniform3f("lightColor", vec3(1));
 		rvShader.setUniform3f("ambientColor", vec3(0.0f));
+		rvShader.setUniform3f("cameraPosition", camMatrices.getCamera().position);
 
 		// other stuff
 
@@ -229,7 +239,8 @@ void ofApp::draw()
 		rvShader.setUniformMatrix3f("normalMatrix", transpose(inverse(rvModel)));
 		rvShader.setUniformTexture("diffuseTex", rvDiffuse, 0);
 		rvShader.setUniformTexture("normalTex", rvNormal, 1);
-		rvShader.setUniformTexture("envMap", skybox.getTexture(), 2);
+		rvShader.setUniformTexture("metallicTex", rvMetallic, 2);
+		rvShader.setUniformTexture("envMap", skybox.getTexture(), 3);
 
 		// draw
 		rvVbo.drawElements(GL_TRIANGLES, rvVbo.getNumIndices());
