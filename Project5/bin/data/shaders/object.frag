@@ -26,6 +26,25 @@ in vec3 objectPos;
 
 out vec4 outColor;
 
+vec3 calcCookTorr(vec3 lightDirection, vec3 viewVec, vec3 worldNormal, vec3 specColor, float nDotL)
+{
+	//setup
+	vec3 halfway = normalize(lightDirection + viewVec);
+	float nDotH = max(0.0, dot(worldNormal, halfway));
+	float nDotV = max(0.0, dot(worldNormal, viewVec));
+
+	float hDotL = clamp(dot(halfway, lightDir),0.0, 1.0);
+	vec3 fresnelHighlight = mix(specColor, vec3(1), pow(1 - hDotL, 5)); // F term
+	float Ddenom = mix(1, roughness * roughness, nDotH * nDotH);
+	Ddenom *= Ddenom;
+	float D = (roughness * roughness) / Ddenom; // D term
+
+	//G term
+	float Gdenom = (nDotV * sqrt(mix(nDotL * nDotL, 1, roughness * roughness))) + (nDotL * sqrt(mix(nDotV * nDotV, 1, roughness * roughness)));
+	float G = 0.5 / max(0.001, Gdenom);
+	return D * fresnelHighlight * G;
+}
+
 void main()
 {
 	// Extracting color from texture and decoding gamma
@@ -49,6 +68,7 @@ void main()
 	vec3 sNormal = normalize(fragNormal);
 	vec3 spotLightIrr = sFalloff * spotLightColor * max(0, dot(sNormal, spotLightDir));
 
+	float spotLightNDotL =  max(0.0, dot(wsNormal, spotLightDir));
 	//DIFFUSE CALCULATIONS
 
 	//irradiance - decoding gamma
@@ -74,28 +94,32 @@ void main()
 	vec3 envReflection = pow(texture(envMap, envLightDir).xyz, vec3(2.2));
 
 	//fresnel effect calculations
-	float envNDotL = max(0.0, dot(wsNormal, envLightDir));
+	float envNDotL = clamp(dot(wsNormal, envLightDir), 0.0, 1.0);
 	vec3 fresnel = mix(specularColor, vec3(1), pow((1 - envNDotL), 5));
 
 	//specular reflection calculation
 	vec3 specularReflection = fresnel * envReflection;
 
+	//DIRECTIONAL LIGHT COOKTORR
 	//specular highlight calculation (Cook-Torrance, GGX, Smith)
-	vec3 halfway = normalize(lightDir + view);
-	float nDotH = max(0.0, dot(wsNormal, halfway));
-	float nDotV = max(0.0, dot(wsNormal, view));
+//	vec3 halfway = normalize(lightDir + view);
+//	float nDotH = max(0.0, dot(wsNormal, halfway));
+//	float nDotV = max(0.0, dot(wsNormal, view));
+//
+//	float hDotL = clamp(dot(halfway, lightDir),0.0, 1.0);
+//	vec3 fresnelHighlight = mix(specularColor, vec3(1), pow(1 - hDotL, 5)); // F term
+//	float Ddenom = mix(1, roughness * roughness, nDotH * nDotH);
+//	Ddenom *= Ddenom;
+//	float D = (roughness * roughness) / Ddenom; // D term
+//
+//	//G term
+//	float Gdenom = (nDotV * sqrt(mix(nDotL * nDotL, 1, roughness * roughness))) + (nDotL * sqrt(mix(nDotV * nDotV, 1, roughness * roughness)));
+//	float G = 0.5 / max(0.001, Gdenom);
 
-	float hDotL = max(0.0, dot(halfway, lightDir));
-	vec3 fresnelHighlight = mix(specularColor, vec3(1), pow(1 - hDotL, 5)); // F term
-	float Ddenom = mix(1, roughness * roughness, nDotH * nDotH);
-	Ddenom *= Ddenom;
-	float D = (roughness * roughness) / Ddenom; // D term
+	vec3 cookTorr = calcCookTorr(lightDir, view, wsNormal, specularColor, nDotL);//D * fresnelHighlight * G;
+	vec3 spotCookTorr = calcCookTorr(spotLightDir, view, wsNormal, specularColor, spotLightNDotL);
 
-	//G term
-	float Gdenom = (nDotV * sqrt(mix(nDotL * nDotL, 1, roughness * roughness))) + (nDotL * sqrt(mix(nDotV * nDotV, 1, roughness * roughness)));
-	float G = 0.5 / Gdenom;
-
-	vec3 cookTorr = D * fresnelHighlight * G;
+	//cookTorr *= nDotL * spotLightIrr;
 
 	//Calculate highlight intensity
 

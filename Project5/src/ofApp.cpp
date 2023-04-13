@@ -131,12 +131,13 @@ void ofApp::updateCameraRotation(const float dx, const float dy)
 //--------------------------------------------------------------
 void ofApp::draw()
 {
-	const SpotLight spotLight {
+	const SpotLight spotLight{
 		vec3(1.0f),
-		10.0f,
+		0.5f,
 		cos(radians(45.0f)),
-		vec3((3 * yAxis) + (-10.0f * zAxis)),
-		-yAxis
+		//vec3((3 * yAxis) + (-10.0f * zAxis)),
+		vec3(0, 0, -8),
+		-zAxis
 	};
 
 
@@ -226,7 +227,7 @@ void ofApp::draw()
 		rvShader.begin();
 
 		// ambient / directional lighting
-		rvShader.setUniform3f("lightDir", normalize(yAxis));
+		rvShader.setUniform3f("lightDir", normalize(-yAxis + zAxis));
 		rvShader.setUniform3f("lightColor", vec3(1));
 		rvShader.setUniform3f("ambientColor", vec3(0.0f));
 		rvShader.setUniform3f("cameraPosition", camMatrices.getCamera().position);
@@ -247,6 +248,7 @@ void ofApp::draw()
 		rvShader.setUniformTexture("normalTex", rvNormal, 1);
 		rvShader.setUniformTexture("metallicTex", rvMetallic, 2);
 		rvShader.setUniformTexture("envMap", skybox.getTexture(), 3);
+		rvShader.setUniform1f("roughness", 0.01f);
 
 		// draw
 		rvVbo.drawElements(GL_TRIANGLES, rvVbo.getNumIndices());
