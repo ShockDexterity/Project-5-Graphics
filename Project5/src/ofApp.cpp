@@ -1,24 +1,13 @@
 #include "ofApp.h"
 
+#include "calcTangents.h"
 #include "CameraMatrices.h"
 #include "Spotlight.h"
-#include "calcTangents.h"
 
 using namespace glm;
 
 /*
- *	PART 1 (60 Points)
- *
- *	(10) All objects in the scene (at least 1) must be illuminated by at least two light sources
- *
- * **********************************************************************************************************************
- *
  *	PART 2 (40 Points)
- *
- *	(20) The scene must have at least one object that exhibits specular reflections of the skybox
- *			and highlights from all the light sources defined in Part 1
- *
- *	(10) The reflections should exhibit the Fresnel effect using Schlick's approximation
  *
  *	(10) For the highlights, you should implement the Cook-Torrance model shown in the
  *			video on physically-based specularity, using the GGX model for the microfacet distribution, the
@@ -164,7 +153,7 @@ void ofApp::draw()
 	drawCube(camMatrices.getProj(), camMatrices.getView());
 
 	// draw shield
-	{
+	/*{
 		shieldShader.begin();
 
 		// ambient / directional lighting
@@ -192,7 +181,7 @@ void ofApp::draw()
 		// draw
 		shieldVbo.drawElements(GL_TRIANGLES, shieldVbo.getNumIndices());
 		shieldShader.end();
-	}
+	}*/
 
 	// draw sword
 	{
