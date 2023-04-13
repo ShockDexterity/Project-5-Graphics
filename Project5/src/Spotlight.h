@@ -21,6 +21,8 @@ public:
 	glm::vec3 getPosition() const { return position; }
 	glm::vec3 getDirection() const { return direction; }
 
+	void translate(const glm::vec3& translation) { this->position += translation; }
+
 private:
 	glm::vec3 color {};
 	float intensity {};

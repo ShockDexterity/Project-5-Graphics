@@ -3,6 +3,7 @@
 #include "Camera.h"
 #include "ofMain.h"
 #include "ofxCubemap.h"
+#include "Spotlight.h"
 
 class ofApp final : public ofBaseApp
 {
@@ -51,8 +52,8 @@ private:
 	ofImage shieldDiffuse {};
 
 	//specular textures
-	ofImage rvMetallic{};
-	ofImage swordMetallic{};
+	ofImage rvMetallic {};
+	ofImage swordMetallic {};
 
 	// normal maps
 	ofImage rvNormal {};
@@ -78,4 +79,13 @@ private:
 	// reloading shaders
 	bool shadersNeedReload { true };
 	void reloadShaders();
+
+	// spotlight
+	SpotLight spotLight {
+		/*color*/ glm::vec3(1.0f),
+		/*intensity*/ 0.5f,
+		/*cutoff*/ glm::cos(glm::radians(45.0f)),
+		/*position*/ glm::vec3(0, 0, -8),
+		/*direction*/ -zAxis
+	};
 };

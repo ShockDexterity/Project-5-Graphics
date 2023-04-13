@@ -2,7 +2,6 @@
 
 #include "calcTangents.h"
 #include "CameraMatrices.h"
-#include "Spotlight.h"
 
 using namespace glm;
 
@@ -38,22 +37,7 @@ void ofApp::setup()
 	// cube mesh
 	cubeMesh.load("models/cube.ply");
 
-
-	// shield mesh
-	shieldMesh.load("models/shield.ply");
-	calcTangents(shieldMesh);
-	shieldVbo.setMesh(shieldMesh, GL_STATIC_DRAW);
-
-	// shield color (with mipmaps)
-	shieldDiffuse.load("textures/shield_diffuse.png");
-	shieldDiffuse.getTexture().generateMipmap();
-	shieldDiffuse.getTexture().setTextureMinMagFilter(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
-
-	// shield normal (with mipmaps)
-	shieldNormal.load("textures/shield_normal.png");
-	shieldNormal.getTexture().generateMipmap();
-	shieldNormal.getTexture().setTextureMinMagFilter(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
-
+	//----------------------------------------------------------------------------------------------
 
 	// rv mesh
 	rvMesh.load("models/breaking.ply");
@@ -73,6 +57,7 @@ void ofApp::setup()
 	//rv specular
 	rvMetallic.load("textures/RV_RV_Metallic.png");
 
+	//----------------------------------------------------------------------------------------------
 
 	// sword mesh
 	swordMesh.load("models/sword.ply");
@@ -115,6 +100,10 @@ void ofApp::update()
 	// time since last frame
 	const float dt { static_cast<float>(ofGetLastFrameTime()) };
 
+	// **************** UNCOMMENT THIS IF YOU WANT IT TO MOVE FORWARD ****************
+	// fun fact: the first "frame" starts when the debug window pops up.
+	// if (dt < 1.0f) { spotLight.translate(vec3(0.0f, 0.0f, -dt)); }
+
 	// update position
 	camera.position += mat3(rotate(camHead, yAxis)) * velocity * dt;
 	camera.rotation = rotate(camHead, yAxis) * rotate(camPitch, xAxis);
@@ -131,16 +120,6 @@ void ofApp::updateCameraRotation(const float dx, const float dy)
 //--------------------------------------------------------------
 void ofApp::draw()
 {
-	const SpotLight spotLight{
-		vec3(1.0f),
-		0.5f,
-		cos(radians(45.0f)),
-		//vec3((3 * yAxis) + (-10.0f * zAxis)),
-		vec3(0, 0, -8),
-		-zAxis
-	};
-
-
 	// aspect ratio
 	const float width { static_cast<float>(ofGetViewportWidth()) };
 	const float height { static_cast<float>(ofGetViewportHeight()) };
@@ -152,37 +131,6 @@ void ofApp::draw()
 	const mat4 vp { camMatrices.getProj() * camMatrices.getView() };
 
 	drawCube(camMatrices.getProj(), camMatrices.getView());
-
-	// draw shield
-	/*{
-		shieldShader.begin();
-
-		// ambient / directional lighting
-		shieldShader.setUniform3f("lightDir", normalize(yAxis));
-		shieldShader.setUniform3f("lightColor", vec3(1));
-		shieldShader.setUniform3f("ambientColor", vec3(0.0f));
-		shieldShader.setUniform3f("cameraPosition", camMatrices.getCamera().position);
-
-		// spotlight
-		shieldShader.setUniform3f("spotLightColor", spotLight.getColorIntensity());
-		shieldShader.setUniform3f("spotLightConeDir", spotLight.getDirection());
-		shieldShader.setUniform3f("spotLightPos", spotLight.getPosition());
-		shieldShader.setUniform1f("spotLightCutoff", spotLight.getCutoff());
-
-		// other stuff
-		const mat4 shieldModel { translate(vec3(0.0f, 0.0f, -2.0f)) };
-		const mat4 shieldMvp { camMatrices.getProj() * camMatrices.getView() * shieldModel };
-		shieldShader.setUniformMatrix4f("mvp", shieldMvp);
-		shieldShader.setUniformMatrix4f("model", shieldModel);
-		shieldShader.setUniformMatrix3f("normalMatrix", transpose(inverse(shieldModel)));
-		shieldShader.setUniformTexture("diffuseTex", shieldDiffuse, 0);
-		shieldShader.setUniformTexture("normalTex", shieldNormal, 1);
-		shieldShader.setUniformTexture("envMap", skybox.getTexture(), 2);
-
-		// draw
-		shieldVbo.drawElements(GL_TRIANGLES, shieldVbo.getNumIndices());
-		shieldShader.end();
-	}*/
 
 	// draw sword
 	{
@@ -201,7 +149,6 @@ void ofApp::draw()
 		swordShader.setUniform1f("spotLightCutoff", spotLight.getCutoff());
 
 		// other stuff
-
 		const mat4 swordModel {
 			translate(vec3(0.0f, 0.0f, -5.0f))
 			* rotate(radians(-45.0f), zAxis)
