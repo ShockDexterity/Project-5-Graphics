@@ -5,16 +5,6 @@
 
 using namespace glm;
 
-/*
- *	PART 2 (40 Points)
- *
- *	(10) For the highlights, you should implement the Cook-Torrance model shown in the
- *			video on physically-based specularity, using the GGX model for the microfacet distribution, the
- *			Smith height-correlated function for microfacet masking and shadowing, and Schlick's
- *			approximation for the Fresnel effect
- *	
- */
-
 void ofApp::reloadShaders()
 {
 	shadersNeedReload = false;
